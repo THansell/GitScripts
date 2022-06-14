@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+#
+
+VERBOSE=1
+declare -a branches=()
+
+if [ $# -gt 0 ]; then
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --VERBOSE|--verbose|-v)
+        VERBOSE=1
+        ;;
+      --NONVERBOSE|--nonverbose|-n)
+        VERBOSE=0
+        ;;
+      *)
+        branches+=($1)
+    esac
+    shift
+  done
+fi
+
+if [ ! -d .git ]; then
+  if [ $VERBOSE == 1 ]; then
+    echo "This folder [$(basename $(pwd))] is not a git repository."
+  fi
+  exit
+fi
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ ${#branches[@]} -eq 0 ]; then
+  branches+=($current_branch)
+fi
+
+echo "Switching to [develop] branch"
+git checkout develop
+echo "Fetching and pulling the latest from the remote"
+gut fetch; git pull
+
+for branch in ${branches[@]}; do
+  echo "Checking out [$branch]"
+  git checkout $branch; then
+  echo "Make sure [$branch] is up to date"
+  git pull
+  echo "Merge develop into [$branch]"
+  git merge develop
+  echo "Pushing changes back to remote"
+  git push
+done
+
+echo "Switching back to the original branch [$current_branch] that we started with"
+git checkout $current_branch
