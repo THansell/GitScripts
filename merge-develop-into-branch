@@ -36,7 +36,7 @@ fi
 echo "Switching to [develop] branch"
 git checkout develop
 echo "Fetching and pulling the latest from the remote"
-gut fetch; git pull
+git fetch; git pull
 
 for branch in ${branches[@]}; do
   echo "Checking out [$branch]"
